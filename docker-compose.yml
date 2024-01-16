@@ -1,7 +1,22 @@
 version: '3.8'
 
 services:
-  client:
+  client-scale:
+    image: scage-scale-image
+    container_name: scage-scale-container
+    build: 
+      context: .
+      dockerfile: ./dockers-files/dockerfile-scage
+    depends_on:
+      wait_for_db:        
+        condition: service_completed_successfully
+    links:
+      - database:banco
+    ports:
+      - "5236:80"
+    restart: always
+
+  client-user:
     image: scage-user-image
     container_name: scage-user-container
     build: 
