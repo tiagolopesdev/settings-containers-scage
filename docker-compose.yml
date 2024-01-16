@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  client:
+    image: scage-user-image
+    container_name: scage-user-container
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      wait_for_db:        
+        condition: service_completed_successfully
+    links:
+      - database:banco
+    ports:
+      - "5122:80"
+    restart: always
+  
+  database: 
+    image: mysql
+    container_name: mysql
+    volumes:
+      - ./create.sql:/docker-entrypoint-initdb.d/create.sql
+      - db-volume:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    expose:
+      - 3306
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: bd1374
+      MYSQL_DATABASE: scage
+    
+  wait_for_db:    
+    image: "busybox:latest"    
+    depends_on:    
+      - database    
+    command: ["sh", "-c", "until nc -vz database 3306 ; do echo 'waiting for sip-db database:3306' ; done"]
+  
+  # network: 
+  #   image: nicolaka/netshoot
+  #   container_name: network
+  #   command: sh -c "fping database"
+
+volumes:
+  db-volume:
