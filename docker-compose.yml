@@ -6,7 +6,7 @@ services:
     container_name: scage-user-container
     build: 
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./dockers-files/dockerfile-users
     depends_on:
       wait_for_db:        
         condition: service_completed_successfully
